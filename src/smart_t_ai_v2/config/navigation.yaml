@@ -1,0 +1,45 @@
+# ============================================================
+#  navigation.yaml — Smart Trolley V5
+#  Configuración de navegación y seguimiento
+#  Consolida: person_follower.yaml
+# ============================================================
+
+person_follower:
+  ros__parameters:
+    # ─────────────────────────────────────────────────────────────
+    # Distancias (metros)
+    # ─────────────────────────────────────────────────────────────
+    target_distance: 1.2      # Distancia objetivo a mantener
+    min_distance: 0.6         # Distancia mínima de seguridad
+    max_distance: 2.5         # Distancia máxima de detección
+
+    # ─────────────────────────────────────────────────────────────
+    # Velocidades máximas
+    # ─────────────────────────────────────────────────────────────
+    max_linear_speed: 0.35    # m/s (velocidad máxima hacia adelante/atrás)
+    max_angular_speed: 0.9    # rad/s (velocidad máxima de giro)
+
+    # ─────────────────────────────────────────────────────────────
+    # Ganancias del controlador proporcional
+    # ─────────────────────────────────────────────────────────────
+    linear_kp: 0.6            # Mayor valor = más agresivo al corregir distancia
+    angular_kp: 1.4           # Mayor valor = más agresivo al centrar
+
+    # ─────────────────────────────────────────────────────────────
+    # Procesamiento de imagen
+    # ─────────────────────────────────────────────────────────────
+    depth_threshold: 0.15     # Profundidad mínima válida (m)
+    roi_width_ratio: 0.65     # Ancho del ROI (65% del centro)
+    roi_height_ratio: 0.75    # Alto del ROI (75% del centro)
+    min_detection_area: 600   # Píxeles mínimos para considerar detección válida
+
+    # ─────────────────────────────────────────────────────────────
+    # Topics
+    # ─────────────────────────────────────────────────────────────
+    depth_topic: '/kinect/depth/image_raw'
+    cmd_vel_topic: '/cmd_vel'
+
+    # ─────────────────────────────────────────────────────────────
+    # Debug
+    # ─────────────────────────────────────────────────────────────
+    enable_debug: true        # Publicar imagen debug en /person_follower/debug_image

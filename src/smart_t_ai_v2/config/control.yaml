@@ -1,0 +1,69 @@
+# ============================================================
+#  control.yaml — Smart Trolley V5
+#  Configuración de control manual (joystick / teclado)
+#  Consolida: stadia_teleop.yaml
+# ============================================================
+#
+# Mapeo calibrado Google Stadia (Bluetooth):
+#   L1 = btn 4  (deadman)
+#   R1 = btn 5  (+ velocidad)
+#   R2 = btn 13 (- velocidad)
+#   L2 = btn 14
+#   A = btn 0 | B = btn 1 | X = btn 2 | Y = btn 3
+#   Stick Izq Y = eje 1 (via /joy, NO eje 4 que es trigger L2)
+#   Stick Izq X = eje 0 (izquierda=-32767, invertido)
+#   Stick Der X = eje 2 (derecha=+32767, invertido)
+#
+#  Controles:
+#    L1 (mantener)  = Deadman (activa movimiento)
+#    Stick Izq ↕    = Avance / retroceso
+#    Stick Izq ↔    = Giro (combinado)
+#    Stick Der ↔    = Rotación pura sobre Z
+#    R1 (pulsar)    = Aumentar velocidad
+#    R2 (pulsar)    = Disminuir velocidad
+#    Soltar L1      = PARADA inmediata
+
+stadia_teleop:
+  ros__parameters:
+    # --- Botones ---
+    btn_deadman: 4          # L1
+    btn_speed_up: 5         # R1
+    btn_speed_down: 13      # R2
+
+    # --- Ejes (mapeados via /joy topic, NO /dev/input/js0 raw) ---
+    axis_linear_y: 1        # Stick Izq Y (eje 1, NO 4 que es trigger L2)
+    axis_angular_x: 0       # Stick Izq X (giro)
+    axis_rotate_x: 2        # Stick Der X (rotación pura)
+
+    # --- Inversión de ejes (verificado con diagnóstico /joy) ---
+    invert_linear: false
+    invert_angular: false
+    invert_rotate: false
+
+    # --- Zona muerta adicional (joy_node ya aplica 0.12) ---
+    deadzone: 0.10
+
+    # --- Niveles de velocidad (R1 sube, R2 baja) ---
+    #   Nivel 1: lento (precisión)
+    #   Nivel 3: default (normal)
+    #   Nivel 5: rápido (turbo)
+    speed_levels_linear:  [0.1, 0.2, 0.3, 0.4, 0.5]
+    speed_levels_angular: [0.3, 0.5, 0.7, 0.9, 1.2]
+    default_speed_level: 2    # Índice 0-based → Nivel 3
+
+    # --- Timeout de seguridad ---
+    safety_timeout: 0.5       # seg sin /joy → stop
+
+# ── joy_node (driver estándar ROS2) ─────────────────────────────────────────
+joy_node:
+  ros__parameters:
+    device_id: 0
+    deadzone: 0.12
+    autorepeat_rate: 20.0
+
+# ── joy_evdev_node (driver evdev alternativo — más robusto en BT) ────────────
+# Usar este si joy_node pierde eventos tras reconexión BT del Stadia
+joy_evdev_node:
+  ros__parameters:
+    device_glob: '/dev/input/event*'  # auto-detecta el control
+    publish_rate: 50.0

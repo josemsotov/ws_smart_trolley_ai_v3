@@ -1,0 +1,63 @@
+================================================================
+   INSTRUCCIONES DE USO - SMART TROLLEY CON TECLADO
+================================================================
+
+🎮 CÓMO CONTROLAR EL ROBOT
+--------------------------
+
+1. INICIAR EL ARDUINO BRIDGE:
+   cd ~/WS/ws_smart_trolley_ai_v2
+   ./start_robot.sh
+
+2. EN OTRA TERMINAL, INICIAR EL CONTROL POR TECLADO:
+   cd ~/WS/ws_smart_trolley_ai_v2
+   source install/setup.bash
+   python3 test_movement.py
+
+3. CONTROLAR EL ROBOT CON TECLAS:
+   W = Avanzar (0.3 m/s)
+   S = Retroceder
+   A = Girar izquierda
+   D = Girar derecha
+   SPACE = Detener
+   Q = Salir
+
+4. VERIFICAR QUE FUNCIONA:
+   # Ver velocidades enviadas al robot
+   ros2 topic echo /cmd_vel
+   
+   # Ver odometría (posición del robot)
+   ros2 topic echo /odom
+
+5. DETENER EL SISTEMA:
+   - En el control de teclado: presiona Q
+   - Para detener arduino_bridge: pkill -9 -f arduino_bridge
+
+📋 COMPONENTES DEL SISTEMA
+---------------------------
+✓ Arduino Mega 2560 (/dev/ttyACM0, 115200 baud)
+✓ Firmware: MOTOR-INTERFACE-V-13
+✓ Drivers: ZS-X11H (alimentación 30V)
+✓ Encoders: Hall 360 PPR (INT4/INT5)
+✓ Control: Teclado Python con ROS2
+✓ ROS2 Jazzy sobre Ubuntu 24.04 WSL2
+
+📊 FLUJO DE DATOS
+-----------------
+Teclado → test_movement.py → /cmd_vel → arduino_bridge.py 
+→ Arduino → ZS-X11H → Motores
+
+⚠️ NOTAS IMPORTANTES
+--------------------
+- Las teclas se leen sin necesidad de presionar Enter
+- El control es inmediato (no hay delay)
+- El arduino_bridge limita velocidades al máximo configurado
+- Si no se reciben comandos por 1 segundo, el robot se detiene
+  automáticamente (watchdog de seguridad)
+- La fuente de 30V DEBE estar conectada para que los motores
+  funcionen
+- Los Hall sensors funcionan a 5V
+
+================================================================
+                    SISTEMA OPERATIVO
+================================================================

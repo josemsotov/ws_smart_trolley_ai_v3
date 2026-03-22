@@ -1,0 +1,82 @@
+# ============================================================
+#  hardware.yaml — Smart Trolley V5
+#  Configuración centralizada de hardware real
+#  Consolida: arduino_params.yaml + arduino_bluetooth.yaml
+# ============================================================
+#
+# ESTRATEGIA DE CONEXIÓN:
+#   Primario : USB  (/dev/ttyACM0 @ 115200) — latencia <5ms, control en tiempo real
+#   Fallback : BT   (/dev/rfcomm0 @ 38400)  — latencia 50-150ms, solo telemetría/manual
+#   El Comm_Manager del firmware detecta timeout USB (5s) y activa Serial2 automáticamente.
+
+arduino_bridge:
+  ros__parameters:
+    # ── CONEXIÓN ────────────────────────────────────────────────────────────
+    connection_type: 'usb'           # 'usb' (primario) | 'bluetooth' (fallback manual)
+    serial_port: '/dev/ttyACM0'      # Puerto USB Arduino Mega
+    baud_rate: 115200                # USB: 115200 | BT fallback: 38400
+    timeout: 1.0
+
+    # ── BLUETOOTH (fallback — solo si USB no disponible) ────────────────────
+    bluetooth_address: '98:D3:32:30:8C:62'  # HC-05 LinkSprite MAC
+    bluetooth_port: '/dev/rfcomm0'           # sudo rfcomm bind rfcomm0 98:D3:32:30:8C:62 1
+    bluetooth_channel: 1
+    bluetooth_device_name: 'Slave'           # Nombre del HC-05 en hcitool scan
+    auto_reconnect: true
+    reconnect_interval: 5.0          # segundos entre intentos de reconexión
+
+    # ── PARÁMETROS FÍSICOS DEL ROBOT ────────────────────────────────────────
+    wheel_separation: 0.48           # metros (distancia entre ruedas)
+    wheel_radius: 0.10               # metros (radio de rueda)
+
+    # ── ENCODERS ────────────────────────────────────────────────────────────
+    # Perfil A (Hall+MPU9250): encoder_ppr = 45
+    # Perfil B (Hall+Opto):    encoder_ppr = 85 (empirico confirmado Run 13: 68p→50.3cm ✓)
+    #   Disco opto spec: 72 CPR — firmware cuenta solo flancos subida → 36 PPR efectivos
+    #   Hall 45 + Opto 36 efectivos... firmware suma de forma no trivial → resultado: 85 PPR
+    #   NO cambiar a 117 (45+72): daría error +13.8cm en 50cm según datos empíricos.
+    encoder_ppr: 85                  # Perfil B activo en firmware — VERIFICADO EMPÍRICAMENTE
+    sensor_profile: 'B'              # 'A' = Hall+MPU9250 | 'B' = Hall+Opto 85PPR
+
+    # ── DIRECCIÓN DE MOTORES ────────────────────────────────────────────────
+    # Usar true si los motores físicamente están montados al revés (antes se usaba
+    # el nodo cmd_vel_inverter.py como parche — ahora es parámetro nativo).
+    motor_direction_invert: false    # true = invierte linear.x en cmd_vel_callback
+
+    # ── LÍMITES DE VELOCIDAD ────────────────────────────────────────────────
+    max_linear_vel: 0.5              # m/s
+    max_angular_vel: 1.0             # rad/s
+
+    # ── TIMEOUTS DE CONTROL ─────────────────────────────────────────────────
+    # USB:  cmd_vel_timeout 1.0s es suficiente (latencia <5ms)
+    # BT:   cmd_vel_timeout debe ser >= 0.5s (latencia BT 50-150ms)
+    cmd_vel_timeout: 1.0             # segundos sin cmd_vel → parar robot
+
+    # ── TASAS DE PUBLICACIÓN ────────────────────────────────────────────────
+    # USB:  encoder_read_rate 50Hz (20ms) → latencia USB <5ms, loop serial ya corre a 50Hz
+    # BT:   encoder_read_rate MAX 5Hz (200ms) → latencia BT ~100ms, margen 2x
+    publish_rate: 50.0               # Hz (odometría — usa caché, no bloquea serial)
+    encoder_read_rate: 20.0          # Hz en USB | BT usar 5.0
+
+    # ── PID HEADING ─────────────────────────────────────────────────────────
+    pid_heading_enabled: true
+    pid_heading_kp: 1.0
+    pid_heading_ki: 0.05
+    pid_heading_kd: 0.1
+    pid_heading_max_correction: 0.3  # rad/s máxima corrección angular
+    pid_heading_deadband: 0.01       # rad — ignorar errores < 0.6°
+
+    # ── GPS (módulo conectado al Arduino) ───────────────────────────────────
+    # El firmware responde al comando 'g\n' con:
+    #   "g <lat> <lon> <fix> <sats> <hdop> [alt] [speed]"
+    # fix: 0=sin fix, 1=GPS standard, 2=DGPS
+    # Publica en /gps/fix (sensor_msgs/NavSatFix) y /gps/status (std_msgs/String)
+    gps_enabled: true                # false si no hay GPS instalado
+    gps_frame_id: 'gps_link'        # frame TF del receptor GPS
+    gps_read_rate: 1.0               # Hz — solicitud de datos GPS al firmware
+
+# ── Robot State Publisher ────────────────────────────────────────────────────
+robot_state_publisher:
+  ros__parameters:
+    robot_description: ''            # Llenado dinámicamente por el launch file
+    publish_frequency: 50.0

@@ -1,0 +1,117 @@
+<?xml version="1.0"?>
+<robot xmlns:xacro="http://www.ros.org/wiki/xacro">
+
+    <!-- ═══════════════════════════════════════════════════════════
+         Microsoft Kinect Xbox 360 — RGB + Depth Camera
+         Dimensions: 280mm × 67mm × 63mm (W × D × H)
+         Weight: ~1.4 kg
+         Position relative to chassis: (0.0, 0, 0.380)
+         
+         Frame hierarchy:
+           chassis → kinect_link → kinect_rgb_frame  → kinect_rgb_optical
+                                 → kinect_depth_frame → kinect_depth_optical
+
+         ⚠ NOTE: The Kinect uses 3 USB devices on Bus 002 (480Mbps).
+                  It conflicts with the integrated USB camera for
+                  bandwidth. Disconnect other USB cameras before
+                  enabling the Kinect.
+         ═══════════════════════════════════════════════════════════ -->
+
+    <!-- ── Main body ── -->
+    <joint name="kinect_joint" type="fixed">
+        <parent link="chassis"/>
+        <child link="kinect_link"/>
+        <origin xyz="0.0 0 0.380" rpy="0 0 0"/>
+    </joint>
+
+    <link name="kinect_link">
+        <visual>
+            <geometry>
+                <box size="0.067 0.280 0.063"/>
+            </geometry>
+            <material name="kinect_black">
+                <color rgba="0.15 0.15 0.15 1.0"/>
+            </material>
+        </visual>
+        <collision>
+            <geometry>
+                <box size="0.067 0.280 0.063"/>
+            </geometry>
+        </collision>
+        <inertial>
+            <origin xyz="0 0 0" rpy="0 0 0"/>
+            <mass value="1.4"/>
+            <inertia ixx="0.010" ixy="0.0" ixz="0.0"
+                     iyy="0.002" iyz="0.0" izz="0.010"/>
+        </inertial>
+    </link>
+
+
+    <!-- ── RGB Camera ── -->
+    <joint name="kinect_rgb_joint" type="fixed">
+        <parent link="kinect_link"/>
+        <child link="kinect_rgb_frame"/>
+        <origin xyz="0.0 0.012 0.0" rpy="0 0 0"/>
+    </joint>
+    <link name="kinect_rgb_frame"/>
+
+    <!-- RGB optical frame (Z forward, X right, Y down) -->
+    <joint name="kinect_rgb_optical_joint" type="fixed">
+        <parent link="kinect_rgb_frame"/>
+        <child link="kinect_rgb_optical"/>
+        <origin xyz="0 0 0" rpy="${-pi/2} 0 ${-pi/2}"/>
+    </joint>
+    <link name="kinect_rgb_optical"/>
+
+
+    <!-- ── Depth Camera (IR projector + IR camera) ── -->
+    <joint name="kinect_depth_joint" type="fixed">
+        <parent link="kinect_link"/>
+        <child link="kinect_depth_frame"/>
+        <origin xyz="0.0 -0.013 0.0" rpy="0 0 0"/>
+    </joint>
+    <link name="kinect_depth_frame"/>
+
+    <!-- Depth optical frame (Z forward, X right, Y down) -->
+    <joint name="kinect_depth_optical_joint" type="fixed">
+        <parent link="kinect_depth_frame"/>
+        <child link="kinect_depth_optical"/>
+        <origin xyz="0 0 0" rpy="${-pi/2} 0 ${-pi/2}"/>
+    </joint>
+    <link name="kinect_depth_optical"/>
+
+
+    <!-- ═══ Gazebo Sim depth camera sensor ═══ -->
+    <gazebo reference="kinect_link">
+        <material>Gazebo/DarkGrey</material>
+
+        <sensor name="kinect_depth" type="depth_camera">
+            <pose>0 0 0 0 0 0</pose>
+            <visualize>true</visualize>
+            <update_rate>15</update_rate>
+            <topic>kinect</topic>
+            <camera>
+                <horizontal_fov>1.047</horizontal_fov>
+                <image>
+                    <width>640</width>
+                    <height>480</height>
+                    <format>R8G8B8</format>
+                </image>
+                <clip>
+                    <near>0.4</near>
+                    <far>8.0</far>
+                </clip>
+                <depth_camera>
+                    <output>points</output>
+                </depth_camera>
+                <noise>
+                    <type>gaussian</type>
+                    <mean>0.0</mean>
+                    <stddev>0.005</stddev>
+                </noise>
+            </camera>
+            <always_on>1</always_on>
+        </sensor>
+    </gazebo>
+
+</robot>

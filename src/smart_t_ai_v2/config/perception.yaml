@@ -1,0 +1,137 @@
+# ============================================================
+#  perception.yaml — Smart Trolley V5
+#  Configuración del sistema de percepción e interacción
+#  Consolida: hailo_interaction.yaml
+# ============================================================
+
+# ── Nodo de detección de cara y gestos (Hailo + MediaPipe) ──────────────────
+hailo_face_gesture:
+  ros__parameters:
+    # Fuente de imagen (Kinect RGB)
+    image_topic: /kinect/rgb/image_raw
+
+    # Modelo HEF para detección de caras (Hailo SCRFD 2.5G)
+    # Descargar con: ./tools/download_hailo_models.sh
+    face_model: scrfd_2.5g.hef
+
+    # Umbral de score para detección de cara (Hailo)
+    face_score_threshold: 0.55
+
+    # Umbral de confianza LBPH para reconocimiento (menor = más estricto)
+    lbph_confidence: 60.0
+
+    # true = el robot solo responde gestos si hay cara autorizada
+    require_auth: true
+
+    # Segundos antes de requerir re-autenticación de cara
+    auth_timeout: 30.0
+
+    # Segundos que hay que mantener un gesto para confirmarlo
+    gesture_hold_time: 0.7
+
+    # Segundos de gesto especial para cambiar de modo (pulgar arriba/abajo, palma)
+    mode_change_hold_time: 2.0
+
+    # Velocidades del robot en modo GESTURE
+    linear_speed: 0.20
+    angular_speed: 0.50
+
+    # Publicar imagen anotada en /hailo/annotated
+    publish_image: true
+
+    # Frecuencia de procesamiento (Hz)
+    process_rate: 10.0
+
+    # MediaPipe Hands: máximo de manos a detectar
+    max_num_hands: 1
+
+    # Confianza mínima de detección de mano (MediaPipe)
+    hand_confidence: 0.65
+
+    # true = nodo inicia activo; false = inicia en DISABLED
+    enabled: true
+
+
+# ── Nodo de detección de objetos (Google Coral EdgeTPU) ─────────────────────
+coral_detector:
+  ros__parameters:
+    image_topic: /kinect/rgb/image_raw
+    score_threshold: 0.4
+    publish_annotated_image: true
+
+
+# ── Nodo de reconocimiento de voz (Vosk offline ES) ─────────────────────────
+voice_control:
+  ros__parameters:
+    # Ruta al modelo Vosk en español (descarga automática si no existe)
+    model_path: /home/josemsotov/.vosk/models/vosk-model-small-es
+
+    # Idioma (solo referencial)
+    language: es
+
+    # Sample rate del micrófono (Hz) — 16000 es estándar para Vosk
+    sample_rate: 16000
+
+    # Índice de dispositivo de micrófono (-1 = automático)
+    device_index: -1
+
+    # true = publicar transcripción cruda en /voice/transcript
+    publish_transcript: true
+
+    # Confianza mínima de Vosk (0.0 - 1.0) para aceptar un resultado
+    min_confidence: 0.55
+
+    # true = descargar modelo automáticamente si no existe
+    auto_download_model: true
+
+    # Velocidades para movimiento por voz
+    linear_speed: 0.18
+    angular_speed: 0.45
+
+    # Duración de movimiento por comando de voz (segundos)
+    voice_move_duration: 1.5
+
+
+# ── Nodo manager de modos y árbitro de cmd_vel ──────────────────────────────
+robot_mode_manager:
+  ros__parameters:
+    # Modo inicial al arrancar
+    default_mode: IDLE
+
+    # Zona muerta del joystick para detectar actividad
+    joy_deadband: 0.15
+
+    # Segundos sin joystick para volver a IDLE (desde TELEOP)
+    joy_timeout: 5.0
+
+    # Timeout de velocidad de gestos (si no hay gesto nuevo → detener)
+    cmd_timeout_gesture: 1.5
+
+    # Timeout de velocidad de voz
+    cmd_timeout_voice: 3.5
+
+    # Timeout de velocidad de seguimiento de persona
+    cmd_timeout_follow: 5.0
+
+    # true = el robot anuncia los cambios de modo por voz (espeak)
+    tts_enabled: true
+
+    # Voz de espeak (es = español)
+    tts_voice: es
+
+    # Frecuencia de publicación de cmd_vel (Hz)
+    publish_rate: 20.0
+
+    # Índice del botón "deadman" del joystick (L1 Stadia = 4)
+    joy_deadman_btn: 4
+
+    # Índice del botón para ciclar modos (Y Stadia = 3)
+    joy_mode_btn: 3
+
+    # Modos permitidos en este sistema
+    allowed_modes:
+      - IDLE
+      - TELEOP
+      - GESTURE
+      - VOICE
+      - FOLLOW

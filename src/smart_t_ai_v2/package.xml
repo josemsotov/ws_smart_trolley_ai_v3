@@ -1,0 +1,44 @@
+<?xml version="1.0"?>
+<?xml-model href="http://download.ros.org/schema/package_format3.xsd" schematypens="http://www.w3.org/2001/XMLSchema"?>
+<package format="3">
+  <name>smart_t_ai_v2</name>
+  <version>1.0.0</version>
+  <description>ROS 2 SMART-TROLLEY V5 package for Jazzy and Gazebo Sim - AI Version V2</description>
+  <maintainer email="josemsotov@gmail.com">Jose Soto Villasmil</maintainer>
+  <license>Apache-2.0</license>
+
+  <buildtool_depend>ament_cmake</buildtool_depend>
+
+  <!-- C++ hardware interface plugin -->
+  <depend>hardware_interface</depend>
+  <depend>pluginlib</depend>
+  <depend>rclcpp</depend>
+  <depend>rclcpp_lifecycle</depend>
+
+  <depend>robot_state_publisher</depend>
+  <depend>xacro</depend>
+  <depend>ros_gz_sim</depend>
+  <depend>ros_gz_bridge</depend>
+  <depend>ros_gz_image</depend>
+  
+  <!-- Hardware interface dependencies -->
+  <depend>geometry_msgs</depend>
+  <depend>nav_msgs</depend>
+  <depend>sensor_msgs</depend>
+  <depend>tf2_ros</depend>
+  
+  <!-- ros2_control dependencies -->
+  <depend>ros2_control</depend>
+  <depend>ros2_controllers</depend>
+  <depend>controller_manager</depend>
+  <depend>diff_drive_controller</depend>
+  <depend>joint_state_broadcaster</depend>
+  <depend>gz_ros2_control</depend>
+
+  <test_depend>ament_lint_auto</test_depend>
+  <test_depend>ament_lint_common</test_depend>
+
+  <export>
+    <build_type>ament_cmake</build_type>
+  </export>
+</package>

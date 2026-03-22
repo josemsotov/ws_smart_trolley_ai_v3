@@ -1,0 +1,98 @@
+<?xml version="1.0"?>
+<!--
+  ros2_control.xacro — Smart Trolley V5
+  ─────────────────────────────────────────────────────────────────────────────
+  Selecciona el plugin de hardware según sim_mode:
+
+    sim_mode = true  → GazeboSimSystem  (gz_ros2_control)
+    sim_mode = false → TrolleyHardwareInterface  (Arduino Mega 2560 real)
+
+  Args externos consumidos (se pasan desde robot.urdf.xacro o launch):
+    sim_mode, serial_port, baud_rate, encoder_ppr,
+    imu_enabled, gps_enabled, motor_dir_invert
+-->
+<robot xmlns:xacro="http://www.ros.org/wiki/xacro">
+
+  <!-- Args con defaults -->
+  <xacro:arg name="sim_mode"         default="true"/>
+  <xacro:arg name="serial_port"      default="/dev/ttyACM0"/>
+  <xacro:arg name="baud_rate"        default="115200"/>
+  <xacro:arg name="encoder_ppr"      default="85"/>
+  <xacro:arg name="imu_enabled"      default="false"/>
+  <xacro:arg name="gps_enabled"      default="false"/>
+  <xacro:arg name="motor_dir_invert" default="false"/>
+
+  <!-- ═══════════════════════════════════════════════════════════════════════
+       ros2_control block: hardware plugin + joints
+       ═══════════════════════════════════════════════════════════════════════ -->
+  <ros2_control name="SmartTrolleySystem" type="system">
+
+    <hardware>
+
+      <!-- ── SIMULACIÓN (Gazebo Sim / gz_ros2_control) ────────────────── -->
+      <xacro:if value="$(arg sim_mode)">
+        <plugin>gz_ros2_control/GazeboSimSystem</plugin>
+      </xacro:if>
+
+      <!-- ── HARDWARE REAL (Arduino Mega 2560) ────────────────────────── -->
+      <xacro:unless value="$(arg sim_mode)">
+        <plugin>smart_t_ai_v2/TrolleyHardwareInterface</plugin>
+
+        <!-- Serial connection -->
+        <param name="serial_port">$(arg serial_port)</param>
+        <param name="baud_rate">$(arg baud_rate)</param>
+
+        <!-- Encoder / kinematics -->
+        <param name="encoder_ppr">$(arg encoder_ppr)</param>
+        <param name="wheel_radius">0.10</param>
+        <param name="wheel_separation">0.48</param>
+
+        <!-- Sensors -->
+        <param name="imu_enabled">$(arg imu_enabled)</param>
+        <param name="imu_rate_hz">10.0</param>
+        <param name="gps_enabled">$(arg gps_enabled)</param>
+        <param name="gps_rate_hz">1.0</param>
+
+        <!-- Motor direction -->
+        <param name="motor_direction_invert">$(arg motor_dir_invert)</param>
+      </xacro:unless>
+
+    </hardware>
+
+    <!-- Left wheel (index 0) -->
+    <joint name="joint_lh">
+      <command_interface name="velocity">
+        <param name="min">-10.0</param>
+        <param name="max"> 10.0</param>
+      </command_interface>
+      <state_interface name="position"/>
+      <state_interface name="velocity"/>
+    </joint>
+
+    <!-- Right wheel (index 1) -->
+    <joint name="joint_rh">
+      <command_interface name="velocity">
+        <param name="min">-10.0</param>
+        <param name="max"> 10.0</param>
+      </command_interface>
+      <state_interface name="position"/>
+      <state_interface name="velocity"/>
+    </joint>
+
+  </ros2_control>
+
+  <!-- ═══════════════════════════════════════════════════════════════════════
+       Gazebo plugin — only when sim_mode=true.
+       gz_ros2_control starts its own controller_manager inside Gazebo.
+       For real hardware the standalone ros2_control_node is used instead.
+       ═══════════════════════════════════════════════════════════════════════ -->
+  <xacro:if value="$(arg sim_mode)">
+    <gazebo>
+      <plugin filename="gz_ros2_control-system"
+              name="gz_ros2_control::GazeboSimROS2ControlPlugin">
+        <parameters>$(find smart_t_ai_v2)/config/controllers.yaml</parameters>
+      </plugin>
+    </gazebo>
+  </xacro:if>
+
+</robot>

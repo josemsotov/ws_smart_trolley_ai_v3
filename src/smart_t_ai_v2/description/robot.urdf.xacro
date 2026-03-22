@@ -1,0 +1,59 @@
+<?xml version="1.0"?>
+<robot xmlns:xacro="http://www.ros.org/wiki/xacro" name="smart_trolley_v5">
+
+    <!-- ═══════════════════════════════════════════════════════════
+         Smart Trolley V5 — Main URDF Assembly
+
+         Arguments:
+           sim_mode         : true  = Gazebo (GazeboSimSystem plugin)
+                              false = Real hardware (TrolleyHardwareInterface)
+           serial_port      : Arduino serial port (real HW only)
+           baud_rate        : Serial baud rate (real HW only)
+           encoder_ppr      : Encoder pulses per revolution (real HW only)
+           imu_enabled      : Enable MPU9250 IMU (Profile A only)
+           gps_enabled      : Enable GPS via Arduino firmware
+           motor_dir_invert : Invert motor direction (real HW only)
+           use_camera       : Include USB camera links/frames
+           use_lidar        : Include LiDAR LD06 links/frames
+           use_kinect       : Include Kinect Xbox 360 links/frames
+         ═══════════════════════════════════════════════════════════ -->
+
+    <!-- ── Global arguments ──────────────────────────────────────── -->
+    <xacro:arg name="sim_mode"         default="true"/>
+    <xacro:arg name="serial_port"      default="/dev/ttyACM0"/>
+    <xacro:arg name="baud_rate"        default="115200"/>
+    <xacro:arg name="encoder_ppr"      default="85"/>
+    <xacro:arg name="imu_enabled"      default="false"/>
+    <xacro:arg name="gps_enabled"      default="false"/>
+    <xacro:arg name="motor_dir_invert" default="false"/>
+    <xacro:arg name="use_camera"       default="true"/>
+    <xacro:arg name="use_lidar"        default="true"/>
+    <xacro:arg name="use_kinect"       default="false"/>
+
+    <!-- ═══ Base robot (chassis, wheels, caster) ═══ -->
+    <xacro:include filename="$(find smart_t_ai_v2)/description/SMART-TROLLEY_V5.xacro"/>
+
+    <!-- ═══ Peripherals (conditional) ═══ -->
+
+    <!-- USB Camera -->
+    <xacro:if value="$(arg use_camera)">
+        <xacro:include filename="$(find smart_t_ai_v2)/description/camera.xacro"/>
+    </xacro:if>
+
+    <!-- LiDAR LD06 -->
+    <xacro:if value="$(arg use_lidar)">
+        <xacro:include filename="$(find smart_t_ai_v2)/description/lidar.xacro"/>
+    </xacro:if>
+
+    <!-- Kinect Xbox 360 -->
+    <xacro:if value="$(arg use_kinect)">
+        <xacro:include filename="$(find smart_t_ai_v2)/description/kinect.xacro"/>
+    </xacro:if>
+
+    <!-- ═══ ros2_control (ALWAYS included — plugin selected by sim_mode) ═══
+         sim_mode=true  → GazeboSimSystem   (Gazebo simulation)
+         sim_mode=false → TrolleyHardwareInterface  (Arduino real hardware)
+    -->
+    <xacro:include filename="$(find smart_t_ai_v2)/description/ros2_control.xacro"/>
+
+</robot>

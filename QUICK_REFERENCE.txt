@@ -1,0 +1,175 @@
+╔═══════════════════════════════════════════════════════════════════╗
+║                   SMART TROLLEY V5 - GUÍA RÁPIDA                  ║
+║                      ros2_control + Arduino Bridge                ║
+╚═══════════════════════════════════════════════════════════════════╝
+
+┌───────────────────────────────────────────────────────────────────┐
+│  HARDWARE REAL (Robot Físico con Arduino)                         │
+└───────────────────────────────────────────────────────────────────┘
+
+1️⃣  INICIAR ROBOT
+   cd ~/WS/ws_smart_trolley_ai_v2
+   ./start_robot.sh
+
+2️⃣  CONTROLAR - Opción A: Menú Simple
+   ./test_simple.sh
+   [1=Adelante, 2=Atrás, 3=Izq, 4=Der, 5=Stop, 0=Salir]
+
+3️⃣  CONTROLAR - Opción B: Teclado Interactivo
+   python3 test_movement.py
+   [W=Adelante, S=Atrás, A=Izq, D=Der, SPACE=Stop, Q=Salir]
+
+4️⃣  CONTROLAR - Opción C: Comandos ROS2
+   ros2 topic pub --rate 10 /cmd_vel geometry_msgs/msg/Twist \
+     "{linear: {x: 0.3}}"
+
+5️⃣  VERIFICAR ESTADO
+   ros2 topic echo /odom              # Ver odometría
+   ros2 topic echo /arduino_status    # Ver estado Arduino
+   ros2 node list                     # Ver nodos activos
+
+6️⃣  DETENER
+   pkill -9 -f arduino_bridge
+
+
+┌───────────────────────────────────────────────────────────────────┐
+│  SIMULACIÓN - ros2_control (Recomendado para desarrollo)          │
+└───────────────────────────────────────────────────────────────────┘
+
+1️⃣  INICIAR SIMULACIÓN
+   cd ~/WS/ws_smart_trolley_ai_v2
+   source install/setup.bash
+   ros2 launch smart_t_ai_v2 launch_sim_ros2_control.launch.py
+
+2️⃣  CONTROLAR (En otra terminal)
+   ros2 run teleop_twist_keyboard teleop_twist_keyboard \
+     --ros-args -r /cmd_vel:=/diff_drive_controller/cmd_vel_unstamped
+
+3️⃣  VER CONTROLADORES
+   ros2 control list_controllers
+
+4️⃣  VER ODOMETRÍA
+   ros2 topic echo /diff_drive_controller/odom
+
+
+┌───────────────────────────────────────────────────────────────────┐
+│  SIMULACIÓN - Básica (Plugin Gazebo nativo)                       │
+└───────────────────────────────────────────────────────────────────┘
+
+1️⃣  INICIAR
+   ros2 launch smart_t_ai_v2 launch_sim.launch.py
+
+2️⃣  CONTROLAR
+   ros2 run teleop_twist_keyboard teleop_twist_keyboard
+
+
+┌───────────────────────────────────────────────────────────────────┐
+│  COMPILAR Y VERIFICAR                                             │
+└───────────────────────────────────────────────────────────────────┘
+
+1️⃣  COMPILAR
+   cd ~/WS/ws_smart_trolley_ai_v2
+   colcon build --symlink-install
+   source install/setup.bash
+
+2️⃣  VERIFICAR SISTEMA
+   ./test_system.sh
+
+3️⃣  VERIFICAR URDF
+   # Sin ros2_control
+   xacro src/smart_t_ai_v2/description/robot.urdf.xacro \
+     use_ros2_control:=false
+
+   # Con ros2_control
+   xacro src/smart_t_ai_v2/description/robot.urdf.xacro \
+     use_ros2_control:=true
+
+
+┌───────────────────────────────────────────────────────────────────┐
+│  TROUBLESHOOTING                                                  │
+└───────────────────────────────────────────────────────────────────┘
+
+❌ Arduino no conecta (WSL2)
+   # En Windows PowerShell (como administrador)
+   usbipd list
+   usbipd bind --busid 7-2
+   usbipd attach --wsl --busid 7-2
+   
+   # En WSL2
+   ls -l /dev/ttyACM0
+   sudo chmod 666 /dev/ttyACM0
+
+❌ Robot no se mueve
+   1. Verificar nodo: ros2 node list | grep arduino
+   2. Ver status: ros2 topic echo /arduino_status
+   3. Ver comandos: ros2 topic echo /cmd_vel
+   4. Reiniciar: pkill -9 -f arduino_bridge && ./start_robot.sh
+
+❌ Errores de compilación
+   cd ~/WS/ws_smart_trolley_ai_v2
+   rm -rf build install log
+   colcon build --symlink-install
+
+❌ Dependencias faltantes
+   rosdep update
+   rosdep install --from-paths src --ignore-src -r -y
+
+
+┌───────────────────────────────────────────────────────────────────┐
+│  PARÁMETROS IMPORTANTES                                           │
+└───────────────────────────────────────────────────────────────────┘
+
+📁 config/arduino_params.yaml
+   - serial_port: /dev/ttyACM0
+   - baud_rate: 115200
+   - wheel_separation: 0.48 m
+   - wheel_radius: 0.10 m
+   - max_linear_vel: 0.5 m/s
+   - max_angular_vel: 1.0 rad/s
+
+📁 config/ros2_controllers.yaml
+   - wheel_separation: 0.48 m
+   - wheel_radius: 0.10 m
+   - max_velocity: 0.5 m/s
+   - max_acceleration: 1.0 m/s²
+   - publish_rate: 50.0 Hz
+
+
+┌───────────────────────────────────────────────────────────────────┐
+│  TOPICS PRINCIPALES                                               │
+└───────────────────────────────────────────────────────────────────┘
+
+Hardware Real (arduino_bridge):
+   /cmd_vel .................... Comandos de velocidad (Twist)
+   /odom ....................... Odometría (Odometry)
+   /joint_states ............... Estados de juntas (JointState)
+   /arduino_status ............. Estado del Arduino (String)
+   /tf ......................... Transformadas (TF)
+
+Simulación (ros2_control):
+   /diff_drive_controller/cmd_vel_unstamped ... Comandos (Twist)
+   /diff_drive_controller/odom ................ Odometría (Odometry)
+   /joint_states .............................. Estados (JointState)
+   /tf ........................................ Transformadas (TF)
+
+
+┌───────────────────────────────────────────────────────────────────┐
+│  DOCUMENTACIÓN                                                    │
+└───────────────────────────────────────────────────────────────────┘
+
+📖 README.md ..................... Documentación principal
+📖 CONTROL_GUIDE.md .............. Guía completa de control
+📖 IMPLEMENTATION_SUMMARY.md ..... Resumen de implementación
+📖 HARDWARE_GUIDE.md ............. Especificaciones hardware
+
+🔗 ros2_control docs: https://control.ros.org/
+🔗 diff_drive_controller: https://control.ros.org/master/doc/
+                          ros2_controllers/diff_drive_controller
+
+
+╔═══════════════════════════════════════════════════════════════════╗
+║  SISTEMA LISTO - Elige tu modo de operación y ¡adelante! 🚀      ║
+╚═══════════════════════════════════════════════════════════════════╝
+
+Desarrollado por: Jose Soto Villasmil
+ROS2 Jazzy + Gazebo Harmonic + Arduino Mega 2560

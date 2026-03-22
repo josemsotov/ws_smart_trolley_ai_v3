@@ -1,0 +1,13 @@
+hailort.log
+# Logs y archivos temporales
+*.log
+*.jpg
+*.png
+*.pdf
+*.gv
+__pycache__/
+*.pyc
+
+# Modelos grandes (descargar con tools/download_hailo_models.sh)
+src/smart_t_ai_v2/models/*.hef
+~/.vosk/

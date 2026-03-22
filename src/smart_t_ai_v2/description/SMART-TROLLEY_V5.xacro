@@ -1,0 +1,119 @@
+<?xml version="1.0" ?>
+<robot name="SMART-TROLLEY_V5" xmlns:xacro="http://www.ros.org/wiki/xacro">
+
+<xacro:include filename="$(find smart_t_ai_v2)/description/materials.xacro" />
+<xacro:include filename="$(find smart_t_ai_v2)/description/SMART-TROLLEY_V5.trans" />
+<xacro:include filename="$(find smart_t_ai_v2)/description/SMART-TROLLEY_V5.gazebo" />
+
+<!--   base_LINK   -->
+<link name="base_link">
+</link>
+
+<joint name="chassis_joint" type="fixed">
+  <origin xyz="0 0 0.1" />
+  <parent link="base_link"/>
+  <child link="chassis"/>
+</joint>
+<!--   chassis  "" -->
+<link name="chassis">
+  <inertial>
+    <origin xyz="-0.162338664747179 -0.22489706516720967 -1.7285588426313447e-08" rpy="0 0 0"/>
+    <mass value="15.301423218521133"/>
+    <inertia ixx="0.32146" iyy="0.643206" izz="0.425001" ixy="0.0" iyz="0.0" ixz="-0.093795"/>
+  </inertial>
+  <visual>
+    <origin xyz="0 0 -0.1" rpy="0 0 0"/>
+    <geometry>
+      <mesh filename="package://smart_t_ai_v2/meshes/chassis.stl" scale="0.001 0.001 0.001"/>
+    </geometry>
+    <material name="silver"/>
+  </visual>
+  <collision>
+    <origin xyz="0 0 -0.1" rpy="0 0 0"/>
+    <geometry>
+      <mesh filename="package://smart_t_ai_v2/meshes/chassis.stl" scale="0.001 0.001 0.001"/>
+    </geometry>
+  </collision>
+</link>
+<!--   left_wheel   -->
+<link name="left_wheel">
+  <inertial>
+    <origin xyz="0 0.1 -0.24" rpy="${pi/2} 0 0"/>
+    <mass value="1.04"/>
+    <inertia ixx="0.001901" iyy="0.003246" izz="0.001901" ixy="0.0" iyz="0.0" ixz="0.0"/>
+  </inertial>
+  <visual>
+    <origin xyz="0 0.1 -0.24" rpy="${pi/2} 0 0"/>
+    <geometry>
+      <mesh filename="package://smart_t_ai_v2/meshes/wheel_lh.stl" scale="0.001 0.001 0.001"/>
+    </geometry>
+    <material name="black"/>
+  </visual>
+  <collision>
+    <origin xyz="0 0.1 -0.24" rpy="${pi/2} 0 0"/>
+    <geometry>
+      <mesh filename="package://smart_t_ai_v2/meshes/wheel_lh.stl" scale="0.001 0.001 0.001"/>
+    </geometry>
+  </collision>
+</link>
+<joint name="joint_lh" type="continuous">
+  <origin xyz="0 0.24 0.1" rpy="-${pi/2} 0 0"/>
+  <parent link="base_link"/>
+  <child link="left_wheel"/>
+  <axis xyz="0 0 -1"/>
+</joint>
+<!--   right_wheel   -->
+<link name="right_wheel">
+  <inertial>
+    <origin xyz="0 0.1 -0.24" rpy="${pi/2} 0 0"/>
+    <mass value="1.04"/>
+    <inertia ixx="0.001901" iyy="0.003246" izz="0.001901" ixy="0.0" iyz="0.0" ixz="0.0"/>
+  </inertial>
+  <visual>
+    <origin xyz="0 0.1 -0.24" rpy="${pi/2} 0 0"/>
+    <geometry>
+      <mesh filename="package://smart_t_ai_v2/meshes/wheel_rh.stl" scale="0.001 0.001 0.001"/>
+    </geometry>
+    <material name="black"/>
+  </visual>
+  <collision>
+    <origin xyz="0 0.1 -0.24" rpy="${pi/2} 0 0"/>
+    <geometry>
+      <mesh filename="package://smart_t_ai_v2/meshes/wheel_rh.stl" scale="0.001 0.001 0.001"/>
+    </geometry>
+  </collision>
+</link>
+<joint name="joint_rh" type="continuous">
+  <origin xyz="0 -0.24 0.1" rpy="${pi/2} 0 0"/>
+  <parent link="base_link"/>
+  <child link="right_wheel"/>
+  <axis xyz="0 0 1"/>
+</joint>
+<!--   castor_wheel   -->
+<link name="caster_wheel">
+  <inertial>
+    <origin xyz="0.5 0 -0.1" rpy="0 0 0"/>
+    <mass value="0.65"/>
+    <inertia ixx="0.000784" iyy="0.000784" izz="0.000784" ixy="0.0" iyz="-0.0" ixz="0.0"/>
+  </inertial>
+  <visual>
+    <origin xyz="0.5 0 -0.1" rpy="0 0 0"/>
+    <geometry>
+      <mesh filename="package://smart_t_ai_v2/meshes/caster_wheel.stl" scale="0.001 0.001 0.001"/>
+    </geometry>
+    <material name="black"/>
+  </visual>
+  <collision>
+    <origin xyz="0.5 0 -0.1" rpy="0 0 0"/>
+    <geometry>
+      <mesh filename="package://smart_t_ai_v2/meshes/caster_wheel.stl" scale="0.001 0.001 0.001"/>
+    </geometry>
+  </collision>
+</link>
+<joint name="caster_joint" type="fixed">
+  <origin xyz="-0.5 0 0.1" rpy="0 0 0"/>
+  <parent link="base_link"/>
+  <child link="caster_wheel"/>
+</joint>
+
+</robot>

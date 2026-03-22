@@ -1,0 +1,17 @@
+<?xml version="1.0"?>
+<!--
+  Plugin descriptor for TrolleyHardwareInterface.
+  Referenced by CMakeLists.txt via pluginlib_export_plugin_description_file().
+-->
+<library path="trolley_hardware_interface">
+  <class
+    name="smart_t_ai_v2/TrolleyHardwareInterface"
+    type="smart_t_ai_v2::TrolleyHardwareInterface"
+    base_class_type="hardware_interface::SystemInterface">
+    <description>
+      ros2_control hardware interface for Smart Trolley V5 with Arduino Mega 2560.
+      Communicates via POSIX serial (USB /dev/ttyACM0 or Bluetooth /dev/rfcomm0).
+      Publishes /imu/raw, /gps/fix, /gps/status, /arduino_status.
+    </description>
+  </class>
+</library>
