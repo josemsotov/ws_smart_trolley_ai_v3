@@ -95,7 +95,7 @@ def generate_launch_description():
     # ─── Nodo 1: Hailo Face Detection + MediaPipe Gesture ───────────────────
     hailo_face_gesture = Node(
         package='smart_t_ai_v2',
-        executable='hailo_face_gesture_node.py',
+        executable='hailo_face_gesture_node',
         name='hailo_face_gesture',
         output='screen',
         parameters=[
@@ -112,7 +112,7 @@ def generate_launch_description():
     # ─── Nodo 2: Voice Control (Vosk ES) ────────────────────────────────────
     voice_control = Node(
         package='smart_t_ai_v2',
-        executable='voice_control_node.py',
+        executable='voice_control_node',
         name='voice_control',
         output='screen',
         parameters=[
@@ -127,7 +127,7 @@ def generate_launch_description():
     # ─── Nodo 3: Robot Mode Manager ─────────────────────────────────────────
     mode_manager = Node(
         package='smart_t_ai_v2',
-        executable='robot_mode_manager_node.py',
+        executable='robot_mode_manager_node',
         name='robot_mode_manager',
         output='screen',
         parameters=[

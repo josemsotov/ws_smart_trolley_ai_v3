@@ -88,7 +88,7 @@ def generate_launch_description():
     # ── 3. Arduino Bridge (directo, sin ros2_control) ───────────────────────
     arduino_node = Node(
         package='smart_t_ai_v2',
-        executable='arduino_bridge.py',
+        executable='arduino_bridge',
         name='arduino_bridge',
         output='screen',
         parameters=[

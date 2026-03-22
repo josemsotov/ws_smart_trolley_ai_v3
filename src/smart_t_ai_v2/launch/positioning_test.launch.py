@@ -137,7 +137,7 @@ def generate_launch_description():
         period=6.0,
         actions=[Node(
             package='smart_t_ai_v2',
-            executable='test_positioning.py',
+            executable='test_positioning',
             name='positioning_test',
             output='screen',
             parameters=[{
@@ -166,7 +166,7 @@ def generate_launch_description():
 
     cmd_vel_relay = Node(
         package='smart_t_ai_v2',
-        executable='cmd_vel_relay.py',
+        executable='cmd_vel_relay',
         name='cmd_vel_relay',
         output='screen',
     )

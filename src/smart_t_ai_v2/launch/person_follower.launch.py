@@ -91,7 +91,7 @@ def generate_launch_description():
     # ─── Kinect Node ───
     kinect_node = Node(
         package='smart_t_ai_v2',
-        executable='kinect_node.py',
+        executable='kinect_node',
         name='kinect_node',
         output='screen',
         parameters=[{
@@ -107,7 +107,7 @@ def generate_launch_description():
     # ─── Person Follower ───
     person_follower = Node(
         package='smart_t_ai_v2',
-        executable='person_follower.py',
+        executable='person_follower',
         name='person_follower',
         output='screen',
         parameters=[follower_config],
@@ -116,7 +116,7 @@ def generate_launch_description():
     # ─── Arduino Bridge (condicional) ───
     arduino_bridge = Node(
         package='smart_t_ai_v2',
-        executable='arduino_bridge.py',
+        executable='arduino_bridge',
         name='arduino_bridge',
         output='screen',
         parameters=[

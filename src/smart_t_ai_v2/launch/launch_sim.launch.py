@@ -95,7 +95,7 @@ def generate_launch_description():
     # (DiffDrive plugin's native TF can't be reliably bridged)
     odom_tf_publisher = Node(
         package='smart_t_ai_v2',
-        executable='odom_tf_publisher.py',
+        executable='odom_tf_publisher',
         name='odom_tf_publisher',
         output='screen',
         parameters=[{'use_sim_time': True}]
@@ -125,7 +125,7 @@ def generate_launch_description():
     # ─── Joystick (evdev) ───
     joy_node = Node(
         package='smart_t_ai_v2',
-        executable='joy_evdev_node.py',
+        executable='joy_evdev_node',
         name='joy_node',
         output='screen',
         parameters=[{'use_sim_time': True}],
@@ -134,7 +134,7 @@ def generate_launch_description():
     # ─── Stadia Teleop (D-pad + sticks) ───
     stadia_teleop = Node(
         package='smart_t_ai_v2',
-        executable='stadia_teleop_node.py',
+        executable='stadia_teleop_node',
         name='stadia_teleop',
         output='screen',
         parameters=[{'use_sim_time': True}],

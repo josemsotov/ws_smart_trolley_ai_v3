@@ -126,7 +126,7 @@ def generate_launch_description():
     # ── 2. Arduino Bridge ─────────────────────────────────────────────────────
     arduino_node = Node(
         package='smart_t_ai_v2',
-        executable='arduino_bridge.py',
+        executable='arduino_bridge',
         name='arduino_bridge',
         output='screen',
         parameters=[
@@ -149,7 +149,7 @@ def generate_launch_description():
         actions=[
             Node(
                 package='smart_t_ai_v2',
-                executable='test_motors_hall.py',
+                executable='test_motors_hall',
                 name='motor_hall_test',
                 output='screen',
                 parameters=[{

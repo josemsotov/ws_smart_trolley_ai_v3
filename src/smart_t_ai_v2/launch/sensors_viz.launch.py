@@ -91,7 +91,7 @@ def generate_launch_description():
     # ─── LiDAR LD06 ───
     ldlidar_node = Node(
         package='smart_t_ai_v2',
-        executable='ld06_lidar_node.py',
+        executable='ld06_lidar_node',
         name='ld06_lidar',
         output='screen',
         parameters=[
@@ -112,7 +112,7 @@ def generate_launch_description():
     # ─── Kinect Xbox 360 (freenect node) ───
     kinect_node = Node(
         package='smart_t_ai_v2',
-        executable='kinect_node.py',
+        executable='kinect_node',
         name='kinect_node',
         output='screen',
         parameters=[{

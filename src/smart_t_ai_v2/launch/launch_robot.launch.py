@@ -169,7 +169,7 @@ def generate_launch_description():
     # ─── LiDAR LD06 (custom node) ───
     ldlidar_node = Node(
         package='smart_t_ai_v2',
-        executable='ld06_lidar_node.py',
+        executable='ld06_lidar_node',
         name='ld06_lidar',
         output='screen',
         parameters=[
@@ -211,7 +211,7 @@ def generate_launch_description():
     # Publishes: /kinect/rgb/image_raw, /kinect/depth/image_raw + camera_info
     kinect_node = Node(
         package='smart_t_ai_v2',
-        executable='kinect_node.py',
+        executable='kinect_node',
         name='kinect_node',
         output='screen',
         parameters=[{
@@ -249,7 +249,7 @@ def generate_launch_description():
     # ─── Coral EdgeTPU Object Detector ───
     coral_detector = Node(
         package='smart_t_ai_v2',
-        executable='coral_detector_node.py',
+        executable='coral_detector_node',
         name='coral_detector',
         output='screen',
         parameters=[{
@@ -266,7 +266,7 @@ def generate_launch_description():
     # ─── Gesture Control (face recognition + hand gestures → cmd_vel) ───
     gesture_control = Node(
         package='smart_t_ai_v2',
-        executable='gesture_control_node.py',
+        executable='gesture_control_node',
         name='gesture_control',
         output='screen',
         parameters=[{
@@ -297,7 +297,7 @@ def generate_launch_description():
 
     hailo_face_gesture = Node(
         package='smart_t_ai_v2',
-        executable='hailo_face_gesture_node.py',
+        executable='hailo_face_gesture_node',
         name='hailo_face_gesture',
         output='screen',
         parameters=[interaction_config],
@@ -306,7 +306,7 @@ def generate_launch_description():
 
     voice_control = Node(
         package='smart_t_ai_v2',
-        executable='voice_control_node.py',
+        executable='voice_control_node',
         name='voice_control',
         output='screen',
         parameters=[interaction_config],
@@ -315,7 +315,7 @@ def generate_launch_description():
 
     mode_manager = Node(
         package='smart_t_ai_v2',
-        executable='robot_mode_manager_node.py',
+        executable='robot_mode_manager_node',
         name='robot_mode_manager',
         output='screen',
         parameters=[interaction_config],
@@ -377,7 +377,7 @@ def generate_launch_description():
     # R1 = +velocidad | R2 = -velocidad
     joy_node = Node(
         package='smart_t_ai_v2',
-        executable='joy_evdev_node.py',
+        executable='joy_evdev_node',
         name='joy_node',
         output='screen',
         parameters=[{
@@ -392,7 +392,7 @@ def generate_launch_description():
     # el mode_manager lo arbibre; sin él, publica directo en /cmd_vel.
     stadia_teleop_node = Node(
         package='smart_t_ai_v2',
-        executable='stadia_teleop_node.py',
+        executable='stadia_teleop_node',
         name='stadia_teleop',
         output='screen',
         parameters=[stadia_config],
@@ -429,7 +429,7 @@ def generate_launch_description():
     ld.add_action(ros2_control_node)
     cmd_vel_relay = Node(
         package='smart_t_ai_v2',
-        executable='cmd_vel_relay.py',
+        executable='cmd_vel_relay',
         name='cmd_vel_relay',
         output='screen',
     )
