@@ -388,16 +388,29 @@ def generate_launch_description():
         condition=IfCondition(PythonExpression(["'", teleop, "' == 'joystick'"]))
     )
 
-    # Con use_interaction=true el stadia publica en /joy_cmd_vel para que
-    # el mode_manager lo arbibre; sin él, publica directo en /cmd_vel.
+    # Sin mode_manager (use_interaction=false): stadia publica directo a /cmd_vel
     stadia_teleop_node = Node(
         package='smart_t_ai_v2',
         executable='stadia_teleop_node',
         name='stadia_teleop',
         output='screen',
         parameters=[stadia_config],
+        condition=IfCondition(PythonExpression(
+            ["'", teleop, "' == 'joystick' and '", use_interaction, "' != 'true'"]
+        ))
+    )
+
+    # Con mode_manager (use_interaction=true): stadia publica a /joy_cmd_vel
+    stadia_teleop_node_managed = Node(
+        package='smart_t_ai_v2',
+        executable='stadia_teleop_node',
+        name='stadia_teleop',
+        output='screen',
+        parameters=[stadia_config],
         remappings=[('/cmd_vel', '/joy_cmd_vel')],
-        condition=IfCondition(PythonExpression(["'", teleop, "' == 'joystick'"]))
+        condition=IfCondition(PythonExpression(
+            ["'", teleop, "' == 'joystick' and '", use_interaction, "' == 'true'"]
+        ))
     )
 
     # ═══ Build LaunchDescription ═══
@@ -457,5 +470,6 @@ def generate_launch_description():
     ld.add_action(teleop_keyboard)
     ld.add_action(joy_node)
     ld.add_action(stadia_teleop_node)
+    ld.add_action(stadia_teleop_node_managed)
 
     return ld
